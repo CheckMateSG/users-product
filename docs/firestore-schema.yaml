@@ -136,7 +136,7 @@ collections:
       submissionCount:
         type: number
         description: Number of submissions of the message
-      adminGroupSentMessageId:
+      adminBroadcastMessageId:
         type:
           - string
           - null
@@ -259,16 +259,6 @@ collections:
               - boolean
               - null
             description: Whether the interim reply was meaningful
-          isRationalisationSent:
-            type:
-              - boolean
-              - null
-            description: Whether rationalisation was sent
-          isRationalisationUseful:
-            type:
-              - boolean
-              - null
-            description: Whether rationalisation was useful
           isCommunityNoteSent:
             type:
               - boolean
@@ -439,7 +429,6 @@ collections:
         type: boolean
         description: Whether the user is a tester
 
-
   generations:
     fields:
       timestamp:
@@ -486,3 +475,6 @@ collections:
           isPendingCorrection:
             type: boolean
             description: Whether the community note is pending correction
+          adminBroadcastMessageId:
+            type: string
+            description: ID of the message sent to the admin group
