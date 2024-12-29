@@ -3,8 +3,7 @@
 /firebase-debug.*.log
 .firebaserc
 
-# Firebase Hosting
-/firebase.json
+# Firebase Hostingß
 *.cache
 hosting/.cache
 
@@ -13,8 +12,7 @@ hosting/.cache
 /functions/.env
 /functions/package-lock.json
 
-# Firebase Emulators
-/firebase-*.zip
+# Firebase Emulators/firebase-*.zip
 /.firebase/
 /emulator-ui/
 
