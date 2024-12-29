@@ -1,0 +1,488 @@
+collections:
+  messages:
+    description: Stores information about messages sent by users
+    fields:
+      machineCategory:
+        type: string
+        description: Category assigned by the ML model (e.g., "scam", "spam", etc.)
+      isMachineCategorised:
+        type: boolean
+        description: Whether the message was categorised by the ML model
+      isWronglyCategorisedIrrelevant:
+        type: boolean
+        description: Whether the message was wrongly categorised as irrelevant
+      text:
+        type:
+          - string
+          - null
+        description: Original unredacted text of the message
+      redactedText:
+        type:
+          - string
+          - null
+        description: Redacted text of the message for display
+      caption:
+        type:
+          - string
+          - null
+        description: Caption for image messages
+      latestSubmission:
+        type:
+          - DocumentReference
+          - null
+        description: Reference to the most recent submission of the message
+      firstTimestamp:
+        type: timestamp
+        description: Timestamp of the first submission of the message
+      lastTimestamp:
+        type: timestamp
+        description: Timestamp of the most recent submission of the message
+      lastRefreshedTimestamp:
+        type: timestamp
+        description: Timestamp of the last refresh of the message
+      isVotingTriggered:
+        type: boolean
+        description: Whether the voting was triggered for the message
+      isAssessed:
+        type: boolean
+        description: Whether the voting is considered completed and ready for a reply
+      assessmentTimestamp:
+        type:
+          - timestamp
+          - null
+        description: Timestamp when the message was assessed
+      assessmentExpiry:
+        type:
+          - timestamp
+          - null
+        description: Expiry timestamp for the assessment
+      assessmentExpired:
+        type: boolean
+        description: Whether the assessment has expired
+      truthScore:
+        type:
+          - number
+          - null
+        description: Mean truth score submitted by checkers
+      numberPointScale:
+        type: enum
+        enum:
+          - 5
+          - 6
+        description: Voting scale (5-point or 6-point)
+      isControversial:
+        type:
+          - boolean
+          - null
+        description: Whether the message is considered controversial
+      isIrrelevant:
+        type:
+          - boolean
+          - null
+        description: Whether the message is considered irrelevant
+      isHarmful:
+        type:
+          - boolean
+          - null
+        description: Whether the message is considered harmful
+      isHarmless:
+        type:
+          - boolean
+          - null
+        description: Whether the message is considered harmless
+      tags:
+        type: TagsMap
+        description: Tags assigned to the message
+      primaryCategory:
+        type:
+          - string
+          - null
+        description: Primary category assigned to the message
+      customReply:
+        type:
+          - object
+          - null
+        description: Externally or admin-set custom reply for the message
+        properties:
+          type:
+            type: enum
+            enum:
+              - text
+              - image
+            description: Type of the custom reply
+          text:
+            type: string
+            description: Text of the custom reply
+          caption:
+            type: string
+            description: Caption of the image message reply, if relevant
+          lastUpdatedBy:
+            type: DocumentReference
+            description: User ID of the last person who updated the custom reply
+          lastUpdatedTimestamp:
+            type: timestamp
+            description: Timestamp where the custom reply was last updated
+      generationStatus:
+        type: enum
+        enum:
+          - generated
+          - unusable
+          - error
+      generationDocument:
+        type:
+          - DocumentReference
+          - null
+        description: Reference to the document containing the generated reply
+      submissionCount:
+        type: number
+        description: Number of submissions of the message
+      adminGroupSentMessageId:
+        type:
+          - string
+          - null
+        description: ID of the message sent to the admin group
+    subcollections:
+      submissions:
+        description: Tracks individual submissions of messages
+        fields:
+          source:
+            type: string
+            description: Source of the message (e.g., WhatsApp, Telegram)
+          id:
+            type:
+              - string
+              - null
+            description: ID of the submission (e.g., WhatsApp ID)
+          timestamp:
+            type: timestamp
+            description: Timestamp when the submission was received
+          type:
+            type: enum
+            enum:
+              - text
+              - image
+            description: Type of message
+          text:
+            type:
+              - string
+              - null
+            description: Message text (not redacted)
+          textHash:
+            type:
+              - string
+              - null
+            description: Hash of the message text
+          caption:
+            type:
+              - string
+              - null
+            description: Caption of the image
+          captionHash:
+            type:
+              - string
+              - null
+            description: Hash of the image caption
+          sender:
+            type:
+              - string
+              - null
+            description: OCR-extracted sender of the message
+          imageType:
+            type: enum
+            enum:
+              - convo
+              - email
+              - letter
+              - others
+              - null
+            description: Type of image
+          ocrVersion:
+            type:
+              - string
+              - null
+            description: OCR engine version used
+          from:
+            type:
+              - string
+              - null
+            description: Sender of the message to CheckMate
+          subject:
+            type:
+              - string
+              - null
+            description: Subject of the message (if email)
+          hash:
+            type:
+              - string
+              - null
+            description: Hash of the image
+          mediaId:
+            type:
+              - string
+              - null
+            description: File ID of the image
+          mimeType:
+            type:
+              - string
+              - null
+            description: MIME type of the image
+          storageUrl:
+            type:
+              - string
+              - null
+            description: URL of the image in storage
+          isForwarded:
+            type:
+              - boolean
+              - null
+            description: Whether the message was forwarded
+          isFrequentlyForwarded:
+            type:
+              - boolean
+              - null
+            description: Whether the message was frequently forwarded
+          isReplied:
+            type: boolean
+            description: Whether the message has been replied to
+          isInterimPromptSent:
+            type:
+              - boolean
+              - null
+            description: Whether an interim prompt was sent
+          isInterimReplySent:
+            type:
+              - boolean
+              - null
+            description: Whether an interim reply was sent
+          isMeaningfulInterimReplySent:
+            type:
+              - boolean
+              - null
+            description: Whether the interim reply was meaningful
+          isRationalisationSent:
+            type:
+              - boolean
+              - null
+            description: Whether rationalisation was sent
+          isRationalisationUseful:
+            type:
+              - boolean
+              - null
+            description: Whether rationalisation was useful
+          isCommunityNoteSent:
+            type:
+              - boolean
+              - null
+            description: Whether the community note was sent
+          isCommunityNoteCorrected:
+            type: boolean
+            description: Whether the community note was corrected
+          isCommunityNoteUseful:
+            type:
+              - boolean
+              - null
+            description: Whether the community note was useful
+          isIrrelevantAppealed:
+            type:
+              - boolean
+              - null
+            description: Whether irrelevant appeal was made
+          replyCategory:
+            type:
+              - string
+              - null
+            description: Category of the reply sent to the user
+          embedding:
+            type:
+              - array
+              - null
+            description: Embedding vector of the message
+
+  users:
+    description: Tracks user information and preferences
+    fields:
+      whatsappId:
+        type:
+          - string
+          - null
+        description: WhatsApp phone number of the user
+      telegramId:
+        type:
+          - string
+          - null
+        description: Telegram ID of the user
+      emailId:
+        type:
+          - string
+          - null
+        description: Email address of the user
+      ageGroup:
+        type: enum
+        enum:
+          - "<20"
+          - "21-35"
+          - "36-50"
+          - "51-65"
+          - ">65"
+          - null
+        description: Age group of the user
+      submissionCount:
+        type: number
+        description: Total number of message submissions sent by the user
+      firstMessageReceiptTime:
+        type: timestamp
+        description: Timestamp of the user's first interaction with the bot
+      firstMessageType:
+        type: enum
+        enum:
+          - normal
+          - irrelevant
+          - prepopulated
+        description: Type of the user's first message
+      lastSent:
+        type:
+          - timestamp
+          - null
+        description: Timestamp of the last message sent by the user
+      satisfactionSurveyLastSent:
+        type:
+          - timestamp
+          - null
+        description: Timestamp when the last satisfaction survey was sent
+      initialJourney:
+        type: map
+        description: Object tracking the user's initial journey, with keys and values as strings
+      referralId:
+        type: string
+        description: Unique referral ID used for tracking
+      utm:
+        type: object
+        description: Object containing UTM parameters for tracking
+        properties:
+          source:
+            type: string
+            description: Source of the referral (e.g., social, email)
+          medium:
+            type: string
+            description: Medium of the referral (e.g., banner, cpc)
+          content:
+            type: string
+            description: Content of the referral (e.g., campaign name)
+          campaign:
+            type: string
+            description: Name of the marketing campaign
+          term:
+            type: string
+            description: Search term associated with the referral
+      referralCount:
+        type: number
+        description: Number of referrals made by the user
+      isReferralMessageSent:
+        type: boolean
+        description: Whether the referral message was sent to the user
+      isReminderMessageSent:
+        type: boolean
+        description: Whether a reminder message was sent to the user
+      language:
+        type: enum
+        enum:
+          - en
+          - cn
+        description: User's preferred language
+      isSubscribedUpdates:
+        type: boolean
+        description: Whether the user opted into proactive updates
+      isIgnored:
+        type: boolean
+        description: Whether the user is blocked or ignored
+      isOnboardingComplete:
+        type: boolean
+        description: Whether the user completed the onboarding process
+      numSubmissionsRemaining:
+        type: number
+        description: Number of submissions the user can make this month
+      monthlySubmissionLimit:
+        type: number
+        description: Monthly submission limit for the user
+      isInterestedInSubscription:
+        type:
+          - boolean
+          - null
+        description: Whether the user is interested in a paid subscription
+      isInterestedAtALowerPoint:
+        type:
+          - boolean
+          - null
+        description: Whether the user is interested in subscribing at a lower price point
+      interestedFor:
+        type:
+          - array
+          - null
+        description: Array of people the user is interested in subscribing for (e.g., "parents", "friends")
+      priceWhereInterested:
+        type:
+          - number
+          - null
+        description: Price point at which the user is willing to subscribe
+      feedback:
+        type:
+          - string
+          - null
+        description: Feedback provided by the user
+      tier:
+        type: enum
+        enum:
+          - free
+          - paid
+        description: User's subscription tier
+      isTester:
+        type: boolean
+        description: Whether the user is a tester
+
+
+  generations:
+    fields:
+      timestamp:
+        type: timestamp
+        description: Timestamp of the generation
+      usable:
+        type: boolean
+        description: Whether the generation is usable. It is not if isVideo/isAccessBlocked is true
+      sources:
+        type: array
+        description: List of related links for the community note
+        items:
+          type: string
+      report:
+        type: object
+        description: Long-form generated report
+        properties:
+          en:
+            type: string
+            description: English text of the report
+          cn:
+            type:
+              - string
+              - null
+            description: Chinese text of the report, if applicable
+          isDownvoted:
+            type: boolean
+            description: Whether the report was downvoted
+      communityNote:
+        type: object
+        description: Short form "community note" generated
+        properties:
+          en:
+            type: string
+            description: English text of the community note
+          cn:
+            type:
+              - string
+              - null
+            description: Chinese text of the community note, if applicable
+          isDownvoted:
+            type: boolean
+            description: Whether the community note was downvoted
+          isPendingCorrection:
+            type: boolean
+            description: Whether the community note is pending correction
