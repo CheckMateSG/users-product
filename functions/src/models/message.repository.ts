@@ -20,10 +20,26 @@ export class MessageRepository extends BaseRepository<Message> {
 
   async addSubmission(
     messageId: string,
-    submission: Omit<Submission, "id">
+    submissionData: Omit<Submission, "id">
   ): Promise<Submission> {
-    const submissionRepo = this.getSubmissionRepository(messageId)
-    return await submissionRepo.create(submission)
+    // execute transaction
+    const result = await this.firestore.runTransaction(async (transaction) => {
+      // Create submission document reference
+      const messageRef = (this.collection as CollectionReference).doc(messageId)
+      const submissionRef = messageRef.collection("submissions").doc()
+      const submissionWithId = { id: submissionRef.id, ...submissionData }
+      transaction.set(
+        submissionRef,
+        submissionConverter.toFirestore(submissionWithId)
+      )
+      // Update message's submission count and latest submission reference
+      transaction.update(messageRef, {
+        submissionCount: FieldValue.increment(1),
+        latestSubmission: submissionRef,
+      })
+      return submissionWithId
+    })
+    return result
   }
 
   async getSubmissions(messageId: string): Promise<Submission[]> {
