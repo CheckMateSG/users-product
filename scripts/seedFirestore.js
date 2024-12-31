@@ -1,22 +1,22 @@
-const admin = require('firebase-admin');
+const admin = require("firebase-admin")
 
 // Initialize Firebase Admin
-const serviceAccount = require('../service-account.json');
+const serviceAccount = require("../service-account.json")
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
+  credential: admin.credential.cert(serviceAccount),
+})
 
-const db = admin.firestore();
+const db = admin.firestore()
 
 async function seedData() {
   try {
     // Add your seeding logic here
-    console.log('Seeding completed successfully');
+    console.log("Seeding completed successfully")
   } catch (error) {
-    console.error('Error seeding data:', error);
+    console.error("Error seeding data:", error)
   } finally {
-    process.exit(0);
+    process.exit(0)
   }
 }
 
-seedData();
+seedData()

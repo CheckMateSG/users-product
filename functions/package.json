@@ -8,7 +8,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "npx firebase emulators:exec --only firestore jest",
+    "test": "npx firebase emulators:exec --only firestore 'jest --detectOpenHandles'",
     "test:watch": "npx firebase emulators:start --only firestore & jest --watch"
   },
   "engines": {

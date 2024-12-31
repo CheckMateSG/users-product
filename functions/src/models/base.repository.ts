@@ -59,7 +59,6 @@ export abstract class BaseRepository<T extends { id: string }> {
 
   protected async queryMany(query: Query): Promise<T[]> {
     const snapshot = await query.get()
-    console.log(snapshot.docs)
     return snapshot.docs.map((doc) => doc.data() as T)
   }
 }

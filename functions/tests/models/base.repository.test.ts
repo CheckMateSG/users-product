@@ -134,8 +134,6 @@ describe("BaseRepository", () => {
     it("should return multiple documents with queryMany", async () => {
       const query = collection.where("value", ">", 15)
       const results = await (repository as any).queryMany(query)
-      console.log(results.length)
-
       expect(results.length).toBe(2)
       results.forEach((result: any) => {
         expect(result.value).toBeGreaterThan(15)
