@@ -8,7 +8,7 @@ import {
 } from "firebase-admin/firestore"
 
 export class SubmissionRepository extends BaseRepository<Submission> {
-  constructor(private firestore: Firestore, private messageId?: string) {
+  constructor(firestore: Firestore, private messageId?: string) {
     const collection = messageId
       ? firestore
           .collection("messages")
