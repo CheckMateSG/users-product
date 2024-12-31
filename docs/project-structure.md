@@ -14,33 +14,39 @@
 
 - **src/** - Source code directory
 
-  - **controllers/**: Handles API logic and maps to service functions.
-  - **models/**: Defines Firestore models and interactions.
-  - **services/**: Implements business logic.
-  - **routes/**: Maps API endpoints to controllers.
-  - **middlewares/**: Middleware for auth, validation, etc.
-  - **triggers/**: Cloud functions triggered by Firestore/other events.
-  - **config/**: Firebase and environment-specific configurations.
-  - **utils/**: Shared utility functions.
-  - **index.ts**: Entry point for Firebase Functions.
-  - **app.ts**: Application setup and initialization.
+  - **handlers/**: Event handlers for different types of inputs
+    - **http/**: HTTP endpoint handlers
+    - **triggers/**: Firestore trigger handlers
+    - **pubsub/**: Pub/Sub event handlers
+  - **services/**: Core business logic implementation
+  - **models/**: Firestore models and data access
+  - **middlewares/**: HTTP request middleware (auth, validation, etc.)
+  - **config/**: Firebase and environment-specific configurations
+  - **utils/**: Shared utility functions
+  - **index.ts**: Entry point for Firebase Functions
+  - **app.ts**: Express app setup and initialization
 
-- **tests/** - Unit and integration tests for backend logic.
+- **tests/** - Unit and integration tests for backend logic
+
+  - **handlers/**: Tests for handlers
+  - **services/**: Tests for business logic
+  - **models/**: Tests for data access
+  - **utils/**: Tests for utilities
 
 - **Configuration Files**
-  - **.firebaserc**: Firebase project configuration.
-  - **firebase.json**: Firebase hosting and functions configuration.
-  - **firestore.rules**: Firestore security rules.
-  - **firestore.indexes.json**: Firestore composite index definitions.
-  - **package.json**: Backend-specific dependencies.
-  - **tsconfig.json**: TypeScript configuration for `functions`.
-  - **.prettierrc**: (Optional) Prettier config specific to the backend, overrides root.
+  - **.firebaserc**: Firebase project configuration
+  - **firebase.json**: Firebase hosting and functions configuration
+  - **firestore.rules**: Firestore security rules
+  - **firestore.indexes.json**: Firestore composite index definitions
+  - **package.json**: Backend-specific dependencies
+  - **tsconfig.json**: TypeScript configuration for `functions`
 
 ---
 
 ## `docs/` - Documentation Files
 
-- **firestore-schema.yaml**: YAML file for Firestore schema.
+- **firestore-schema.yaml**: YAML file for Firestore schema
+- **project-structure.md**: This file - project organization documentation
 
 ---
 
