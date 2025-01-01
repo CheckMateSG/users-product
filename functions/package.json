@@ -6,10 +6,12 @@
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "predeploy": "npm run build",
+    "deploy:uat": "firebase deploy --only functions --project uat",
+    "deploy:prod": "firebase deploy --only functions --project prod",
     "logs": "firebase functions:log",
-    "test": "npx firebase emulators:exec --only firestore 'jest --detectOpenHandles'",
-    "test:watch": "npx firebase emulators:start --only firestore & jest --watch"
+    "test": "npx firebase emulators:exec --only firestore --project uat \"jest --detectOpenHandles\"",
+    "test:watch": "npx firebase emulators:start --only firestore --project uat & jest --watch"
   },
   "engines": {
     "node": "22"

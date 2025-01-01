@@ -1,14 +1,11 @@
 // src/models/submission.repository.ts
 import { BaseRepository } from "./base.repository"
 import { Submission, submissionConverter } from "./types/submission"
-import {
-  Firestore,
-  UpdateData,
-  CollectionReference,
-} from "firebase-admin/firestore"
+import { UpdateData, CollectionReference } from "firebase-admin/firestore"
+import { firestore } from "./firestore/firestore"
 
 export class SubmissionRepository extends BaseRepository<Submission> {
-  constructor(firestore: Firestore, private messageId?: string) {
+  constructor(private messageId?: string) {
     const collection = messageId
       ? firestore
           .collection("messages")

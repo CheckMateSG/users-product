@@ -1,3 +1,4 @@
+// functions\src\models\types\message.ts
 import {
   Timestamp,
   DocumentReference,

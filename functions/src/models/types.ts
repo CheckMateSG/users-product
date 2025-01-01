@@ -1,3 +1,4 @@
+// functions\src\models\types.ts
 import { Timestamp, DocumentReference } from "firebase-admin/firestore"
 
 export type MessageType = "text" | "image"

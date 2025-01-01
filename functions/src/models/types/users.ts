@@ -1,3 +1,4 @@
+// functions\src\models\types\users.ts
 import { Timestamp } from "firebase-admin/firestore"
 
 export type AgeGroup = "<20" | "21-35" | "36-50" | "51-65" | ">65" | null

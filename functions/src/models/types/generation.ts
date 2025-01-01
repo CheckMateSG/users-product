@@ -1,3 +1,4 @@
+// functions\src\models\types\generation.ts
 import { Timestamp } from "firebase-admin/firestore"
 
 interface Report {

@@ -1,67 +1,64 @@
+// functions\src\models\message.repository.ts
 import { BaseRepository } from "./base.repository"
 import { Message, messageConverter } from "./types/message"
-import { Submission, submissionConverter } from "./types/submission"
+import { Submission } from "./types/submission"
 import { SubmissionRepository } from "./submission.repository"
-import {
-  Firestore,
-  WithFieldValue,
-  FieldValue,
-  CollectionReference,
-} from "firebase-admin/firestore"
-import { createRepositoryLogger } from "../config/logger"
+import { WithFieldValue, FieldValue } from "firebase-admin/firestore"
+import { firestore } from "./firestore/firestore"
 
 export class MessageRepository extends BaseRepository<Message> {
-  constructor(private firestore: Firestore) {
+  constructor() {
     super(firestore.collection("messages"), messageConverter)
   }
 
-  private logger = createRepositoryLogger("MessageRepository")
+  // private logger = createRepositoryLogger("MessageRepository")
 
   getSubmissionRepository(messageId: string): SubmissionRepository {
-    return new SubmissionRepository(this.firestore, messageId)
+    return new SubmissionRepository(messageId)
   }
 
-  async addSubmission(
-    messageId: string,
-    submissionData: Omit<Submission, "id">,
-    sourceUniqueId: string
-  ): Promise<Submission | null> {
-    const logger = this.logger.child({
-      method: "addSubmission",
-      sourceUniqueId,
-      sender: submissionData.from,
-    })
-    // execute transaction
-    const result = await this.firestore.runTransaction(async (transaction) => {
-      // Create submission document reference
-      const query = this.firestore
-        .collectionGroup("submissions")
-        .where("sourceUniqueId", "==", sourceUniqueId)
-        .limit(1)
-      const querySnapshot = await query.get()
-      if (!querySnapshot.empty) {
-        logger.warn("Submission with sourceUniqueId already exists")
-        return null
-      }
-      const messageRef = (this.collection as CollectionReference).doc(messageId)
-      const submissionRef = messageRef.collection("submissions").doc()
-      const submissionWithId = { id: submissionRef.id, ...submissionData }
-      transaction.set(
-        submissionRef,
-        submissionConverter.toFirestore(submissionWithId)
-      )
-      // Update message's submission count and latest submission reference
-      transaction.update(messageRef, {
-        submissionCount: FieldValue.increment(1),
-        latestSubmission: submissionRef,
-      })
+  // async addSubmission(
+  //   messageId: string,
+  //   submissionData: Omit<Submission, "id">,
+  //   sourceUniqueId: string
+  // ): Promise<Submission | null> {
+  //   const logger = this.logger.child({
+  //     method: "addSubmission",
+  //     sourceUniqueId,
+  //     sender: submissionData.from,
+  //   })
+  //   // execute transaction
+  //   const result = await firestore.runTransaction(async (transaction) => {
+  //     //check for idempotency
+  //     const query = firestore
+  //       .collectionGroup("submissions")
+  //       .where("sourceUniqueId", "==", sourceUniqueId)
+  //       .limit(1)
+  //     const querySnapshot = await transaction.get(query)
+  //     if (!querySnapshot.empty) {
+  //       logger.warn("Submission with sourceUniqueId already exists")
+  //       return null
+  //     }
+  //     // Create submission document reference)
+  //     const messageRef = (this.collection as CollectionReference).doc(messageId)
+  //     const submissionRef = messageRef.collection("submissions").doc()
+  //     const submissionWithId = { id: submissionRef.id, ...submissionData }
+  //     transaction.set(
+  //       submissionRef,
+  //       submissionConverter.toFirestore(submissionWithId)
+  //     )
+  //     // Update message's submission count and latest submission reference
+  //     transaction.update(messageRef, {
+  //       submissionCount: FieldValue.increment(1),
+  //       latestSubmission: submissionRef,
+  //     })
 
-      logger.info("Added submission")
+  //     logger.info("Added submission")
 
-      return submissionWithId
-    })
-    return result
-  }
+  //     return submissionWithId
+  //   })
+  //   return result
+  // }
 
   async getSubmissions(messageId: string): Promise<Submission[]> {
     const submissionRepo = this.getSubmissionRepository(messageId)
@@ -98,55 +95,55 @@ export class MessageRepository extends BaseRepository<Message> {
     await this.update(messageId, assessmentData)
   }
 
-  async createMessageWithSubmission(
-    messageData: Omit<Message, "id">,
-    submissionData: Omit<Submission, "id">,
-    sourceUniqueId: string
-  ): Promise<{ message: Message | null; submission: Submission | null }> {
-    const logger = this.logger.child({
-      method: "createMessageWithSubmission",
-      sourceUniqueId,
-      sender: submissionData.from,
-    })
-    const result = await this.firestore.runTransaction(async (transaction) => {
-      const query = this.firestore
-        .collectionGroup("submissions")
-        .where("sourceUniqueId", "==", sourceUniqueId)
-        .limit(1)
-      const querySnapshot = await query.get()
-      if (!querySnapshot.empty) {
-        logger.warn({}, "Submission with sourceUniqueId already exists")
-        return {
-          message: null,
-          submission: null,
-        }
-      }
-      // Create message document reference
-      const messageRef = (this.collection as CollectionReference).doc()
-      const messageWithId = { id: messageRef.id, ...messageData }
+  // async createMessageWithSubmission(
+  //   messageData: Omit<Message, "id">,
+  //   submissionData: Omit<Submission, "id">,
+  //   sourceUniqueId: string
+  // ): Promise<{ message: Message | null; submission: Submission | null }> {
+  //   const logger = this.logger.child({
+  //     method: "createMessageWithSubmission",
+  //     sourceUniqueId,
+  //     sender: submissionData.from,
+  //   })
+  //   const result = await firestore.runTransaction(async (transaction) => {
+  //     const query = firestore
+  //       .collectionGroup("submissions")
+  //       .where("sourceUniqueId", "==", sourceUniqueId)
+  //       .limit(1)
+  //     const querySnapshot = await query.get()
+  //     if (!querySnapshot.empty) {
+  //       logger.warn({}, "Submission with sourceUniqueId already exists")
+  //       return {
+  //         message: null,
+  //         submission: null,
+  //       }
+  //     }
+  //     // Create message document reference
+  //     const messageRef = (this.collection as CollectionReference).doc()
+  //     const messageWithId = { id: messageRef.id, ...messageData }
 
-      // Create submission document reference
-      const submissionRef = messageRef.collection("submissions").doc()
-      const submissionWithId = { id: submissionRef.id, ...submissionData }
+  //     // Create submission document reference
+  //     const submissionRef = messageRef.collection("submissions").doc()
+  //     const submissionWithId = { id: submissionRef.id, ...submissionData }
 
-      // Set both documents in the transaction
-      transaction.set(messageRef, messageConverter.toFirestore(messageWithId))
-      transaction.set(
-        submissionRef,
-        submissionConverter.toFirestore(submissionWithId)
-      )
+  //     // Set both documents in the transaction
+  //     transaction.set(messageRef, messageConverter.toFirestore(messageWithId))
+  //     transaction.set(
+  //       submissionRef,
+  //       submissionConverter.toFirestore(submissionWithId)
+  //     )
 
-      // Update message's submission count and latest submission reference
-      transaction.update(messageRef, {
-        submissionCount: FieldValue.increment(1),
-        latestSubmission: submissionRef,
-      })
+  //     // Update message's submission count and latest submission reference
+  //     transaction.update(messageRef, {
+  //       submissionCount: FieldValue.increment(1),
+  //       latestSubmission: submissionRef,
+  //     })
 
-      logger.info("Created message and submission")
+  //     logger.info("Created message and submission")
 
-      return { message: messageWithId, submission: submissionWithId }
-    })
+  //     return { message: messageWithId, submission: submissionWithId }
+  //   })
 
-    return result
-  }
+  //   return result
+  // }
 }
