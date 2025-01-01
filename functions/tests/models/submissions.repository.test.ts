@@ -90,7 +90,15 @@ describe("SubmissionRepository", () => {
     it("should create and retrieve a submission", async () => {
       const testData = createTestSubmission()
       const messageRepo = new MessageRepository(firestore)
-      const submission = await messageRepo.addSubmission(messageId, testData)
+      const submission = await messageRepo.addSubmission(
+        messageId,
+        testData,
+        testData.sourceUniqueId
+      )
+
+      if (!submission) {
+        throw new Error("Submission not found")
+      }
 
       expect(submission.id).toBeDefined()
       expect(submission.text).toBe(testData.text)

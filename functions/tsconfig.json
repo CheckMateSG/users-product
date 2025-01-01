@@ -12,5 +12,5 @@
     "types": ["jest", "node"]
   },
   "compileOnSave": true,
-  "include": ["src", "test"]
+  "include": ["src", "tests"]
 }
