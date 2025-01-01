@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "checkmate-user-sg-uat",
+    "uat": "checkmate-user-sg-uat",
+    "prod": "checkmate-user-sg"
+  }
+}
