@@ -59,7 +59,7 @@ describe("MessageRepository", () => {
     overrides: Partial<Submission> = {}
   ): Omit<Submission, "id"> => ({
     source: "test-source",
-    sourceUniqueId: "test-unique-id",
+    sourceUniqueId: "1",
     timestamp: Timestamp.now(),
     type: "text" as const,
     text: "test submission",
@@ -140,8 +140,13 @@ describe("MessageRepository", () => {
       const { message, submission } =
         await repository.createMessageWithSubmission(
           messageData,
-          submissionData
+          submissionData,
+          submissionData.sourceUniqueId
         )
+
+      if (!message) {
+        throw new Error("Message not found")
+      }
 
       // Verify we can retrieve the message
       const retrievedMessage = await repository.findById(message.id)
@@ -169,16 +174,26 @@ describe("MessageRepository", () => {
       const secondSubmission = createTestSubmission({
         text: "second submission",
         textHash: "hash456",
+        sourceUniqueId: "2",
       })
 
       // Create first message+submission
       const first = await repository.createMessageWithSubmission(
         messageData,
-        firstSubmission
+        firstSubmission,
+        firstSubmission.sourceUniqueId
       )
 
+      if (!first.message) {
+        throw new Error("Message not found")
+      }
+
       // Add second submission
-      await repository.addSubmission(first.message.id, secondSubmission)
+      await repository.addSubmission(
+        first.message.id,
+        secondSubmission,
+        secondSubmission.sourceUniqueId
+      )
 
       // Get all submissions
       const submissions = await repository.getSubmissions(first.message.id)
@@ -190,6 +205,47 @@ describe("MessageRepository", () => {
       const message = await repository.findById(first.message.id)
       expect(message?.submissionCount).toBe(2)
       expect(message?.latestSubmission).toBeDefined()
+    })
+
+    it("should handle cases of duplicate sourceUniqueIds", async () => {
+      const messageData = createTestMessage()
+      const submissionData = createTestSubmission()
+
+      // Create first message+submission
+      const first = await repository.createMessageWithSubmission(
+        messageData,
+        submissionData,
+        submissionData.sourceUniqueId
+      )
+
+      expect(first.message).not.toBeNull()
+      expect(first.submission).not.toBeNull()
+
+      // Try to create another message with same sourceUniqueId
+      const second = await repository.createMessageWithSubmission(
+        messageData,
+        submissionData,
+        submissionData.sourceUniqueId
+      )
+
+      // Should return null for both message and submission
+      expect(second.message).toBeNull()
+      expect(second.submission).toBeNull()
+
+      // Try to add submission with same sourceUniqueId to existing message
+      const duplicateSubmission = await repository.addSubmission(
+        first.message!.id,
+        submissionData,
+        submissionData.sourceUniqueId
+      )
+
+      // Should return null for duplicate submission
+      expect(duplicateSubmission).toBeNull()
+
+      // Verify only one submission exists
+      const submissions = await repository.getSubmissions(first.message!.id)
+      expect(submissions).toHaveLength(1)
+      expect(submissions[0].sourceUniqueId).toBe(submissionData.sourceUniqueId)
     })
   })
 })

@@ -102,7 +102,7 @@ export class MessageRepository extends BaseRepository<Message> {
     messageData: Omit<Message, "id">,
     submissionData: Omit<Submission, "id">,
     sourceUniqueId: string
-  ): Promise<{ message: Message; submission: Submission } | null> {
+  ): Promise<{ message: Message | null; submission: Submission | null }> {
     const logger = this.logger.child({
       method: "createMessageWithSubmission",
       sourceUniqueId,
@@ -116,7 +116,10 @@ export class MessageRepository extends BaseRepository<Message> {
       const querySnapshot = await query.get()
       if (!querySnapshot.empty) {
         logger.warn({}, "Submission with sourceUniqueId already exists")
-        return null
+        return {
+          message: null,
+          submission: null,
+        }
       }
       // Create message document reference
       const messageRef = (this.collection as CollectionReference).doc()
