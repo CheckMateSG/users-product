@@ -4,6 +4,7 @@ const isDevelopment = process.env.NODE_ENV === "development"
 
 // Base logger with environment-specific configuration
 const logger = pino({
+  timestamp: () => `,"time":"${new Date().toLocaleString()}"`,
   level: isDevelopment ? "debug" : "info",
   formatters: {
     level: (label) => {

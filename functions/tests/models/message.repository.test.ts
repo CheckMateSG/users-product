@@ -15,9 +15,19 @@ describe("MessageRepository", () => {
 
   afterEach(async () => {
     // Clean up - delete all documents in the messages collection
-    const snapshot = await firestore.collection("messages").get()
-    const deletePromises = snapshot.docs.map((doc) => doc.ref.delete())
-    await Promise.all(deletePromises)
+
+    const submissionsSnapshot = await firestore
+      .collectionGroup("submissions")
+      .get()
+    const submissionDeletePromises = submissionsSnapshot.docs.map((doc) =>
+      doc.ref.delete()
+    )
+    await Promise.all(submissionDeletePromises)
+    const messagesSnapshot = await firestore.collection("messages").get()
+    const messageDeletePromises = messagesSnapshot.docs.map((doc) =>
+      doc.ref.delete()
+    )
+    await Promise.all(messageDeletePromises)
   })
 
   const createTestMessage = (
@@ -69,7 +79,7 @@ describe("MessageRepository", () => {
     sender: "test-sender",
     imageType: null,
     ocrVersion: null,
-    from: null,
+    from: "6591234567",
     subject: null,
     hash: "hash123",
     mediaId: null,
