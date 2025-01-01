@@ -145,14 +145,18 @@ collections:
       submissions:
         description: Tracks individual submissions of messages
         fields:
-          source:
-            type: string
-            description: Source of the message (e.g., WhatsApp, Telegram)
           id:
             type:
               - string
               - null
             description: ID of the submission (e.g., WhatsApp ID)
+          source:
+            type: string
+            description: Source of the message (e.g., WhatsApp, Telegram)
+          sourceUniqueId:
+            type:
+              - string
+            description: Unique ID of the message in the source
           timestamp:
             type: timestamp
             description: Timestamp when the submission was received
@@ -319,7 +323,7 @@ collections:
       submissionCount:
         type: number
         description: Total number of message submissions sent by the user
-      firstMessageReceiptTime:
+      firstInteractionTime:
         type: timestamp
         description: Timestamp of the user's first interaction with the bot
       firstMessageType:
@@ -334,11 +338,6 @@ collections:
           - timestamp
           - null
         description: Timestamp of the last message sent by the user
-      satisfactionSurveyLastSent:
-        type:
-          - timestamp
-          - null
-        description: Timestamp when the last satisfaction survey was sent
       initialJourney:
         type: map
         description: Object tracking the user's initial journey, with keys and values as strings
@@ -370,9 +369,6 @@ collections:
       isReferralMessageSent:
         type: boolean
         description: Whether the referral message was sent to the user
-      isReminderMessageSent:
-        type: boolean
-        description: Whether a reminder message was sent to the user
       language:
         type: enum
         enum:
@@ -390,10 +386,10 @@ collections:
         description: Whether the user completed the onboarding process
       numSubmissionsRemaining:
         type: number
-        description: Number of submissions the user can make this month
-      monthlySubmissionLimit:
+        description: Remaining number of submissions the user can make.
+      dailySubmissionLimit:
         type: number
-        description: Monthly submission limit for the user
+        description: Daily submission limit for the user
       isInterestedInSubscription:
         type:
           - boolean
@@ -409,6 +405,9 @@ collections:
           - array
           - null
         description: Array of people the user is interested in subscribing for (e.g., "parents", "friends")
+        items:
+          type: string
+          description: Who the user is interested in subscribing for
       priceWhereInterested:
         type:
           - number

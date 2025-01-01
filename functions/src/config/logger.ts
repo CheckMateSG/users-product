@@ -10,6 +10,16 @@ const logger = pino({
       return { level: label }
     },
   },
+  serializers: {
+    sender: (value) => {
+      // Mask all but the last 4 digits
+      if (typeof value === "string" || typeof value === "number") {
+        const str = value.toString()
+        return str.slice(-4).padStart(str.length, "*")
+      }
+      return value // Return as is if not a string or number
+    },
+  },
   transport: isDevelopment
     ? {
         target: "pino-pretty",
@@ -47,6 +57,12 @@ export const createPubSubLogger = (handlerName: string) =>
   })
 
 export const createServiceLogger = (serviceName: string) =>
+  envLogger.child({
+    service: serviceName,
+    component: "service",
+  })
+
+export const createRepositoryLogger = (serviceName: string) =>
   envLogger.child({
     service: serviceName,
     component: "service",

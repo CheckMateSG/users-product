@@ -59,6 +59,7 @@ describe("MessageRepository", () => {
     overrides: Partial<Submission> = {}
   ): Omit<Submission, "id"> => ({
     source: "test-source",
+    sourceUniqueId: "test-unique-id",
     timestamp: Timestamp.now(),
     type: "text" as const,
     text: "test submission",

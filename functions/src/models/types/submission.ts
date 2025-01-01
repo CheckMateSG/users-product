@@ -3,6 +3,7 @@ import { Timestamp, FieldValue } from "firebase-admin/firestore"
 export interface Submission {
   id: string
   source: string
+  sourceUniqueId: string
   timestamp: Timestamp
   type: "text" | "image"
   text: string | null

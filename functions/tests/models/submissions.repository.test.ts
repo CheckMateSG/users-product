@@ -55,6 +55,7 @@ describe("SubmissionRepository", () => {
     overrides: Partial<Submission> = {}
   ): Omit<Submission, "id"> => ({
     source: "test-source",
+    sourceUniqueId: "test-unique-id",
     timestamp: Timestamp.now(),
     type: "text",
     text: "test submission",

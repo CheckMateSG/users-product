@@ -8,11 +8,14 @@ import {
   FieldValue,
   CollectionReference,
 } from "firebase-admin/firestore"
+import { createRepositoryLogger } from "../config/logger"
 
 export class MessageRepository extends BaseRepository<Message> {
   constructor(private firestore: Firestore) {
     super(firestore.collection("messages"), messageConverter)
   }
+
+  private logger = createRepositoryLogger("MessageRepository")
 
   getSubmissionRepository(messageId: string): SubmissionRepository {
     return new SubmissionRepository(this.firestore, messageId)
@@ -20,11 +23,26 @@ export class MessageRepository extends BaseRepository<Message> {
 
   async addSubmission(
     messageId: string,
-    submissionData: Omit<Submission, "id">
-  ): Promise<Submission> {
+    submissionData: Omit<Submission, "id">,
+    sourceUniqueId: string
+  ): Promise<Submission | null> {
+    const logger = this.logger.child({
+      method: "addSubmission",
+      sourceUniqueId,
+      sender: submissionData.from,
+    })
     // execute transaction
     const result = await this.firestore.runTransaction(async (transaction) => {
       // Create submission document reference
+      const query = this.firestore
+        .collectionGroup("submissions")
+        .where("sourceUniqueId", "==", sourceUniqueId)
+        .limit(1)
+      const querySnapshot = await query.get()
+      if (!querySnapshot.empty) {
+        logger.warn("Submission with sourceUniqueId already exists")
+        return null
+      }
       const messageRef = (this.collection as CollectionReference).doc(messageId)
       const submissionRef = messageRef.collection("submissions").doc()
       const submissionWithId = { id: submissionRef.id, ...submissionData }
@@ -37,6 +55,9 @@ export class MessageRepository extends BaseRepository<Message> {
         submissionCount: FieldValue.increment(1),
         latestSubmission: submissionRef,
       })
+
+      logger.info("Added submission")
+
       return submissionWithId
     })
     return result
@@ -79,9 +100,24 @@ export class MessageRepository extends BaseRepository<Message> {
 
   async createMessageWithSubmission(
     messageData: Omit<Message, "id">,
-    submissionData: Omit<Submission, "id">
-  ): Promise<{ message: Message; submission: Submission }> {
+    submissionData: Omit<Submission, "id">,
+    sourceUniqueId: string
+  ): Promise<{ message: Message; submission: Submission } | null> {
+    const logger = this.logger.child({
+      method: "createMessageWithSubmission",
+      sourceUniqueId,
+      sender: submissionData.from,
+    })
     const result = await this.firestore.runTransaction(async (transaction) => {
+      const query = this.firestore
+        .collectionGroup("submissions")
+        .where("sourceUniqueId", "==", sourceUniqueId)
+        .limit(1)
+      const querySnapshot = await query.get()
+      if (!querySnapshot.empty) {
+        logger.warn({}, "Submission with sourceUniqueId already exists")
+        return null
+      }
       // Create message document reference
       const messageRef = (this.collection as CollectionReference).doc()
       const messageWithId = { id: messageRef.id, ...messageData }
@@ -102,6 +138,8 @@ export class MessageRepository extends BaseRepository<Message> {
         submissionCount: FieldValue.increment(1),
         latestSubmission: submissionRef,
       })
+
+      logger.info("Created message and submission")
 
       return { message: messageWithId, submission: submissionWithId }
     })
