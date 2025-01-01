@@ -13,25 +13,6 @@ export interface HttpClientConfig extends AxiosRequestConfig {
   timeout?: number
 }
 
-export class HttpError extends Error {
-  public status?: number
-  public code?: string
-  public response?: any
-  public config?: any
-
-  constructor(message: string) {
-    super(message)
-    // Restore prototype chain; otherwise, instanceof checks may fail.
-    Object.setPrototypeOf(this, HttpError.prototype)
-  }
-}
-
-export interface RetryConfig {
-  retries: number
-  retryDelay: number
-  retryCondition: (error: AxiosError) => boolean
-}
-
 export type RequestInterceptor = (
   config: AxiosRequestConfig
 ) => InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig>
