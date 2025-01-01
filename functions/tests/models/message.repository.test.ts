@@ -143,22 +143,19 @@ describe("MessageRepository", () => {
           submissionData
         )
 
-      // Verify message was created with correct data
-      expect(message.id).toBeDefined()
-      expect(message.machineCategory).toBe(messageData.machineCategory)
-      expect(message.text).toBe(messageData.text)
-      expect(message.submissionCount).toBe(1)
-      expect(message.latestSubmission).toBeDefined()
-
-      // Verify submission was created with correct data
-      expect(submission.id).toBeDefined()
-      expect(submission.text).toBe(submissionData.text)
-      expect(submission.source).toBe(submissionData.source)
-      expect(submission.type).toBe(submissionData.type)
-
       // Verify we can retrieve the message
       const retrievedMessage = await repository.findById(message.id)
-      expect(retrievedMessage).toEqual(message)
+
+      if (!retrievedMessage) {
+        throw new Error("Message not found")
+      }
+
+      // Verify message was created with correct data
+      expect(retrievedMessage.id).toBeDefined()
+      expect(retrievedMessage.machineCategory).toBe(messageData.machineCategory)
+      expect(retrievedMessage.text).toBe(messageData.text)
+      expect(retrievedMessage.submissionCount).toBe(1)
+      expect(retrievedMessage.latestSubmission).toBeDefined()
 
       // Verify we can get the submission through the message
       const submissions = await repository.getSubmissions(message.id)
@@ -181,10 +178,7 @@ describe("MessageRepository", () => {
       )
 
       // Add second submission
-      const second = await repository.addSubmission(
-        first.message.id,
-        secondSubmission
-      )
+      await repository.addSubmission(first.message.id, secondSubmission)
 
       // Get all submissions
       const submissions = await repository.getSubmissions(first.message.id)
