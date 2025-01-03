@@ -79,22 +79,6 @@ export class MessageRepository extends BaseRepository<Message> {
     } as WithFieldValue<Partial<Message>>)
   }
 
-  async updateAssessment(
-    messageId: string,
-    assessmentData: Partial<
-      Pick<
-        Message,
-        | "isAssessed"
-        | "assessmentTimestamp"
-        | "assessmentExpiry"
-        | "truthScore"
-        | "isControversial"
-      >
-    >
-  ): Promise<void> {
-    await this.update(messageId, assessmentData)
-  }
-
   // async createMessageWithSubmission(
   //   messageData: Omit<Message, "id">,
   //   submissionData: Omit<Submission, "id">,
